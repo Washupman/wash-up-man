@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>จองซักผ้า - Laundry Express</title>
-  <!-- LIFF SDK -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
@@ -12,7 +11,8 @@
     .form-group { margin: 15px 0; }
     label { display: block; margin-bottom: 5px; font-weight: bold; }
     input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-    button { background: #00b900; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 18px; width: 100%; margin-top: 20px; }
+    button { background: #00b900; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 18px; width: 100%; margin-top: 20px; cursor: pointer; }
+    button:disabled { background: #ccc; }
     .note { font-size: 14px; color: #666; }
   </style>
 </head>
@@ -61,62 +61,73 @@
   </div>
   
   <div class="form-group">
-    <label>หมายเหตุเพิ่มเติม (เช่น รอยเปื้อนพิเศษ, ผ้าห่ม, จุดสังเกต)</label>
+    <label>หมายเหตุเพิ่มเติม</label>
     <textarea id="note" rows="3" placeholder="ไม่บังคับ"></textarea>
   </div>
   
-  <p class="note">* หลังกดส่ง ลูกค้าจะส่งข้อมูลกลับไปในแชท Line OA อัตโนมัติ</p>
+  <p class="note">* ข้อมูลการจองจะถูกส่งเข้าไปในแชท LINE ของคุณ</p>
   
   <button id="submitBtn">✅ ส่งข้อมูลการจอง</button>
 
   <script>
     async function main() {
-      await liff.init({ liffId: "2008812860-trP1QVCC" }); // LIFF ID ของคุณ
-      
-      // ดึงชื่อจาก Line Profile อัตโนมัติ (ถ้ามี)
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile();
-        document.getElementById('name').value = profile.displayName;
-      }
-      
-      // เมื่อกดส่ง
-      document.getElementById('submitBtn').addEventListener('click', async () => {
-        const name = document.getElementById('name').value;
-        const phone = document.getElementById('phone').value;
-        const address = document.getElementById('address').value;
-        const date = document.getElementById('pickupDate').value;
-        const time = document.getElementById('pickupTime').value;
-        const weight = document.getElementById('weight').value;
-        const note = document.getElementById('note').value || "ไม่มี";
+      try {
+        await liff.init({ liffId: "2008812860-trP1QVCC" });
         
-        if (!name || !phone || !address || !date || !time) {
-          alert("กรุณากรอกข้อมูลให้ครบ");
-          return;
+        // เช็คการ Login
+        if (!liff.isLoggedIn()) {
+          liff.login();
+        } else {
+          const profile = await liff.getProfile();
+          document.getElementById('name').value = profile.displayName;
         }
-        
-        const message = `🧺 การจองใหม่!\n\n` +
-                        `ชื่อ: ${name}\n` +
-                        `เบอร์: ${phone}\n` +
-                        `ที่อยู่: ${address}\n` +
-                        `วันที่รับผ้า: ${date}\n` +
-                        `ช่วงเวลา: ${time}\n` +
-                        `น้ำหนักโดยประมาณ: ${weight || "ไม่ระบุ"}\n` +
-                        `หมายเหตุ: ${note}`;
-        
-        try {
+      } catch (err) {
+        console.error("LIFF Init Error:", err);
+      }
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const name = document.getElementById('name').value;
+      const phone = document.getElementById('phone').value;
+      const address = document.getElementById('address').value;
+      const date = document.getElementById('pickupDate').value;
+      const time = document.getElementById('pickupTime').value;
+      const weight = document.getElementById('weight').value;
+      const note = document.getElementById('note').value || "ไม่มี";
+
+      if (!name || !phone || !address || !date || !time) {
+        alert("กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน");
+        return;
+      }
+
+      const message = `🧺 การจองใหม่!\n\n` +
+                      `ชื่อ: ${name}\n` +
+                      `เบอร์: ${phone}\n` +
+                      `ที่อยู่: ${address}\n` +
+                      `วันที่รับผ้า: ${date}\n` +
+                      `ช่วงเวลา: ${time}\n` +
+                      `น้ำหนักโดยประมาณ: ${weight || "ไม่ระบุ"}\n` +
+                      `หมายเหตุ: ${note}`;
+
+      try {
+        // ตรวจสอบว่าเปิดในแอป LINE หรือไม่ (ส่งข้อความได้เฉพาะในแอป)
+        if (liff.isInClient()) {
           await liff.sendMessages([{
             type: 'text',
             text: message
           }]);
-          alert("ส่งข้อมูลสำเร็จ! แอดมินจะติดต่อกลับเร็ว ๆ นี้");
+          alert("ส่งข้อมูลการจองเรียบร้อยแล้ว!");
           liff.closeWindow();
-        } catch (error) {
-          alert("ไม่สามารถส่งข้อความได้ กรุณาส่งในแชทปกติ");
+        } else {
+          // ถ้าเปิดใน Browser ปกติ ให้แจ้งเตือน
+          alert("ไม่สามารถส่งข้อมูลผ่าน Browser ได้ กรุณาเปิดผ่านแอป LINE\n\nข้อมูลของคุณ:\n" + message);
         }
-      });
-    }
-    
-    liff.ready.then(main);
+      } catch (error) {
+        alert("เกิดข้อผิดพลาด: " + error.message + "\nกรุณาตรวจสอบว่าคุณได้อนุญาตสิทธิ์ 'chat_message.write' ใน LINE Developers แล้ว");
+      }
+    });
+
+    main();
   </script>
 </body>
 </html>
