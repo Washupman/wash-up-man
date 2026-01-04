@@ -10,21 +10,21 @@
     h1 { text-align: center; color: #333; }
     .form-group { margin: 15px 0; }
     label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+    input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
     
-    /* ปุ่มแชร์พิกัดแบบสวยงาม */
+    /* ปุ่มดึงพิกัดสีฟ้าสดใส */
     .location-btn {
-      background: #007bff; color: white; border: none; padding: 10px;
-      border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-size: 14px; width: 100%;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: #007bff; color: white; border: none; padding: 12px;
+      border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-size: 16px; width: 100%;
+      font-weight: bold;
     }
+    .location-btn:active { background: #0056b3; }
     
-    button#submitBtn { background: #00b900; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 18px; width: 100%; margin-top: 20px; cursor: pointer; }
-    .note { font-size: 14px; color: #666; }
+    button#submitBtn { background: #00b900; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 18px; width: 100%; margin-top: 20px; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h1>📆 จองบริการรับ-ส่งผ้าซัก</h1>
+  <h1>📦 จองบริการรับ-ส่งผ้าซัก</h1>
   
   <div class="form-group">
     <label>ชื่อ-นามสกุล</label>
@@ -38,8 +38,8 @@
   
   <div class="form-group">
     <label>ที่อยู่สำหรับรับผ้า</label>
-    <button type="button" class="location-btn" onclick="getGPSLocation()">📍 กดเพื่อดึงพิกัดที่อยู่ปัจจุบัน</button>
-    <textarea id="address" rows="4" placeholder="ระบุเลขที่บ้าน, ชื่อคอนโด หรือรายละเอียดเพิ่มเติม..." required></textarea>
+    <button type="button" class="location-btn" onclick="askGPS()">📍 กดเพื่อส่งตำแหน่งที่ตั้ง (GPS)</button>
+    <textarea id="address" rows="4" placeholder="ระบุบ้านเลขที่ หรือรายละเอียดเพิ่มเติม..." required></textarea>
   </div>
   
   <div class="form-group">
@@ -61,32 +61,34 @@
 
   <script>
     async function main() {
-      await liff.init({ liffId: "2008812860-trP1QVCC" });
-      if (!liff.isLoggedIn()) { liff.login(); }
-      const profile = await liff.getProfile();
-      document.getElementById('name').value = profile.displayName;
+      try {
+        await liff.init({ liffId: "2008812860-trP1QVCC" });
+        if (!liff.isLoggedIn()) { liff.login(); }
+        const profile = await liff.getProfile();
+        document.getElementById('name').value = profile.displayName;
+      } catch (err) { console.error(err); }
     }
 
-    // ฟังก์ชันดึงพิกัดโดยใช้ GPS ของมือถือ (ไม่ต้องพึ่ง Scope ของ LINE)
-    function getGPSLocation() {
-      if (!navigator.geolocation) {
-        alert("มือถือของคุณไม่รองรับการดึงพิกัด");
-        return;
+    // ฟังก์ชันขอพิกัด GPS
+    function askGPS() {
+      if (navigator.geolocation) {
+        alert("กำลังค้นหาตำแหน่ง... โปรดกด 'อนุญาต' (Allow) หากระบบถาม");
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          
+          // ลิงก์ Google Maps ที่ถูกต้อง
+          const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+          
+          const addressArea = document.getElementById('address');
+          addressArea.value = "📍 พิกัดร้าน: " + googleMapsUrl + "\n" + addressArea.value;
+          alert("ดึงตำแหน่งสำเร็จแล้ว!");
+        }, function(error) {
+          alert("ไม่สามารถดึงตำแหน่งได้: โปรดเปิด GPS ที่มือถือและอนุญาตสิทธิ์ตำแหน่งในแอป LINE");
+        });
+      } else {
+        alert("มือถือเครื่องนี้ไม่รองรับระบบ GPS บนเบราว์เซอร์");
       }
-
-      alert("กำลังดึงพิกัด... โปรดกด 'อนุญาต' หรือ 'Allow' หากมีหน้าต่างเด้งถาม");
-
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-        
-        const addressBox = document.getElementById('address');
-        addressBox.value = `ตำแหน่ง Google Maps: ${mapUrl}\n\n` + addressBox.value;
-        alert("ดึงพิกัดสำเร็จ!");
-      }, function(error) {
-        alert("ไม่สามารถดึงพิกัดได้: กรุณาเปิด GPS และอนุญาตการเข้าถึงตำแหน่งในเบราว์เซอร์");
-      });
     }
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -101,17 +103,15 @@
         return;
       }
 
-      const message = `✅ การจองใหม่!\n\nชื่อ: ${name}\nเบอร์: ${phone}\nที่อยู่: ${address}\nวันที่รับผ้า: ${date}\nเวลา: ${time}`;
+      const message = `🧺 การจองใหม่!\n\nชื่อ: ${name}\nเบอร์: ${phone}\nที่อยู่: ${address}\nวันที่: ${date}\nเวลา: ${time}`;
 
       try {
-        if (liff.isInClient()) {
-          await liff.sendMessages([{ type: 'text', text: message }]);
-          alert("ส่งข้อมูลเรียบร้อยแล้ว!");
-          liff.closeWindow();
-        } else {
-          alert("กรุณาใช้งานผ่านแอป LINE เพื่อส่งข้อความ");
-        }
-      } catch (err) { alert("เกิดข้อผิดพลาด: " + err.message); }
+        await liff.sendMessages([{ type: 'text', text: message }]);
+        alert("จองสำเร็จ! ข้อมูลถูกส่งเข้าแชทแล้ว");
+        liff.closeWindow();
+      } catch (err) {
+        alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + err.message);
+      }
     });
 
     main();
