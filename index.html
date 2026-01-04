@@ -6,115 +6,200 @@
   <title>จองซักผ้า - Laundry Express</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
-    h1 { text-align: center; color: #333; }
-    .form-group { margin: 15px 0; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; background: #f0f2f5; color: #333; line-height: 1.6; }
+    .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #00b900; margin-bottom: 25px; font-size: 24px; }
     
-    /* ปุ่มดึงพิกัดสีฟ้าสดใส */
+    .form-group { margin-bottom: 18px; }
+    label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
+    input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
+    input:focus, textarea:focus { border-color: #00b900; }
+    
     .location-btn {
       background: #007bff; color: white; border: none; padding: 12px;
-      border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-size: 16px; width: 100%;
-      font-weight: bold;
+      border-radius: 10px; cursor: pointer; margin-bottom: 10px; font-size: 15px; width: 100%; font-weight: bold;
+      transition: background 0.3s;
     }
     .location-btn:active { background: #0056b3; }
     
-    button#submitBtn { background: #00b900; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 18px; width: 100%; margin-top: 20px; cursor: pointer; font-weight: bold; }
+    .photo-alert { background: #fff9e6; color: #856404; padding: 12px; border-radius: 10px; font-size: 13px; border: 1px solid #ffeeba; margin: 15px 0; display: flex; align-items: center; gap: 8px; }
+    
+    .terms-container { font-size: 13px; margin-top: 20px; display: flex; align-items: flex-start; gap: 10px; }
+    .terms-container input { width: auto; margin-top: 3px; cursor: pointer; }
+    .terms-link { color: #007bff; text-decoration: underline; cursor: pointer; font-weight: bold; }
+    
+    button#submitBtn { background: #00b900; color: white; padding: 16px; border: none; border-radius: 10px; font-size: 18px; width: 100%; margin-top: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    button#submitBtn:active { background: #009900; transform: translateY(2px); }
+    
+    .footer-note { text-align: center; font-size: 12px; color: #888; margin-top: 15px; }
   </style>
 </head>
 <body>
-  <h1>📦 จองบริการรับ-ส่งผ้าซัก</h1>
+
+<div class="container">
+  <h1>📦 Laundry Express</h1>
   
   <div class="form-group">
     <label>ชื่อ-นามสกุล</label>
-    <input type="text" id="name" required>
+    <input type="text" id="name" placeholder="ดึงข้อมูลจาก LINE..." required>
   </div>
   
   <div class="form-group">
     <label>เบอร์โทรศัพท์</label>
-    <input type="tel" id="phone" required>
+    <input type="tel" id="phone" placeholder="เช่น 0812345678" maxlength="10" required>
   </div>
   
   <div class="form-group">
-    <label>ที่อยู่สำหรับรับผ้า</label>
+    <label>ที่อยู่สำหรับรับผ้า (และส่งคืน)</label>
     <button type="button" class="location-btn" onclick="askGPS()">📍 กดเพื่อส่งตำแหน่งที่ตั้ง (GPS)</button>
-    <textarea id="address" rows="4" placeholder="ระบุบ้านเลขที่ หรือรายละเอียดเพิ่มเติม..." required></textarea>
+    <textarea id="address" rows="3" placeholder="ระบุบ้านเลขที่, ซอย, ถนน หรือชื่อคอนโด..." required></textarea>
+  </div>
+
+  <div class="form-group">
+    <label>ประเภทบริการ</label>
+    <select id="serviceType">
+      <option value="ซัก-พับ">🧺 ซัก-พับ</option>
+      <option value="ซัก-รีด">👔 ซัก-รีด</option>
+      <option value="ซักรีด+ซักพับ">👔+🧺 ซักรีด + ซักพับ</option>
+    </select>
   </div>
   
   <div class="form-group">
-    <label>วันที่สะดวกให้ไปรับผ้า</label>
+    <label>น้ำหนักผ้าโดยประมาณ</label>
+    <select id="weight">
+      <option value="ไม่ระบุ">ไม่ระบุ</option>
+      <option value="น้อยกว่า 5 กก.">น้อยกว่า 5 กก.</option>
+      <option value="5-10 กก.">5-10 กก.</option>
+      <option value="มากกว่า 10 กก.">มากกว่า 10 กก.</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>การชำระเงิน (จ่ายที่เจ้าหน้าที่รับผ้า)</label>
+    <select id="payment">
+      <option value="เงินสด">💵 เงินสด</option>
+      <option value="โอนจ่าย">📱 โอนจ่าย</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>วันที่และช่วงเวลาที่สะดวกรับผ้า</label>
     <input type="date" id="pickupDate" required>
-  </div>
-  
-  <div class="form-group">
-    <label>ช่วงเวลาที่สะดวก</label>
-    <select id="pickupTime" required>
-      <option value="">เลือกช่วงเวลา</option>
+    <select id="pickupTime" style="margin-top: 8px;">
       <option value="09:00-12:00">เช้า 09:00-12:00</option>
       <option value="13:00-17:00">บ่าย 13:00-17:00</option>
       <option value="17:00-20:00">เย็น 17:00-20:00</option>
     </select>
   </div>
-  
-  <button id="submitBtn">✅ ส่งข้อมูลการจอง</button>
 
-  <script>
-    async function main() {
-      try {
-        await liff.init({ liffId: "2008812860-trP1QVCC" });
-        if (!liff.isLoggedIn()) { liff.login(); }
+  <div class="photo-alert">
+    <span>📸</span>
+    <span><b>สำคัญ:</b> หลังกดส่งจองแล้ว รบกวนถ่ายรูปถุงผ้าส่งมาในแชทเพิ่มด้วยนะครับ</span>
+  </div>
+
+  <div class="terms-container">
+    <input type="checkbox" id="terms">
+    <label for="terms">ยอมรับ <span class="terms-link" onclick="showTerms()">เงื่อนไขการรับประกัน</span> (กรณีผ้าสีตก/ของสูญหาย)</label>
+  </div>
+  
+  <button id="submitBtn">✅ ยืนยันการจอง</button>
+  <p class="footer-note">ข้อมูลจะถูกส่งไปยัง LINE OA อัตโนมัติ</p>
+</div>
+
+<script>
+  // เริ่มต้น LIFF
+  async function main() {
+    try {
+      await liff.init({ liffId: "2008812860-trP1QVCC" });
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
         const profile = await liff.getProfile();
         document.getElementById('name').value = profile.displayName;
-      } catch (err) { console.error(err); }
+      }
+    } catch (err) {
+      console.error("LIFF Error:", err);
+    }
+  }
+
+  // แสดงเงื่อนไขการบริการ
+  function showTerms() {
+    alert(
+      "เงื่อนไขการใช้บริการ Laundry Express\n" +
+      "----------------------------------\n" +
+      "1. โปรดนำของมีค่าออกจากกระเป๋าผ้า ร้านไม่รับผิดชอบกรณีสูญหาย\n" +
+      "2. ความเสียหายจากการซัก ร้านชดเชยไม่เกิน 3 เท่าของค่าบริการชิ้นนั้น\n" +
+      "3. กรณีผ้าสีตกใส่กัน ร้านขอพิจารณาชดเชยตามความเหมาะสม\n" +
+      "4. โปรดแจ้งหากพบปัญหาภายใน 24 ชม. หลังจากได้รับผ้า\n" +
+      "5. ชำระค่าบริการโดยตรงกับเจ้าหน้าที่หน้างานเท่านั้น"
+    );
+  }
+
+  // ดึงพิกัด GPS
+  function askGPS() {
+    if (navigator.geolocation) {
+      alert("กำลังค้นหาตำแหน่งพิกัดของคุณ...");
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+        const addressField = document.getElementById('address');
+        addressField.value = "📍 พิกัด GPS: " + mapUrl + "\n" + addressField.value;
+        alert("ดึงพิกัดสำเร็จ!");
+      }, function() {
+        alert("ไม่สามารถดึงตำแหน่งได้ กรุณาเปิด GPS และอนุญาตการเข้าถึงตำแหน่ง");
+      });
+    }
+  }
+
+  // ส่งข้อมูล
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+    const isAgreed = document.getElementById('terms').checked;
+    if(!isAgreed) {
+      alert("กรุณาติ๊กยอมรับเงื่อนไขการรับประกันก่อนส่งข้อมูลครับ");
+      return;
     }
 
-    // ฟังก์ชันขอพิกัด GPS
-    function askGPS() {
-      if (navigator.geolocation) {
-        alert("กำลังค้นหาตำแหน่ง... โปรดกด 'อนุญาต' (Allow) หากระบบถาม");
-        navigator.geolocation.getCurrentPosition(function(position) {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          
-          // ลิงก์ Google Maps ที่ถูกต้อง
-          const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-          
-          const addressArea = document.getElementById('address');
-          addressArea.value = "📍 พิกัดร้าน: " + googleMapsUrl + "\n" + addressArea.value;
-          alert("ดึงตำแหน่งสำเร็จแล้ว!");
-        }, function(error) {
-          alert("ไม่สามารถดึงตำแหน่งได้: โปรดเปิด GPS ที่มือถือและอนุญาตสิทธิ์ตำแหน่งในแอป LINE");
-        });
-      } else {
-        alert("มือถือเครื่องนี้ไม่รองรับระบบ GPS บนเบราว์เซอร์");
-      }
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const address = document.getElementById('address').value;
+    const service = document.getElementById('serviceType').value;
+    const payment = document.getElementById('payment').value;
+    const weight = document.getElementById('weight').value;
+    const date = document.getElementById('pickupDate').value;
+    const time = document.getElementById('pickupTime').value;
+
+    if (!name || !phone || !address || !date) {
+      alert("กรุณากรอกข้อมูลส่วนสำคัญให้ครบถ้วน");
+      return;
     }
 
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-      const name = document.getElementById('name').value;
-      const phone = document.getElementById('phone').value;
-      const address = document.getElementById('address').value;
-      const date = document.getElementById('pickupDate').value;
-      const time = document.getElementById('pickupTime').value;
+    const message = `🧺 การจองใหม่ (Laundry Express)\n\n` +
+                    `👤 ชื่อ: ${name}\n` +
+                    `📞 เบอร์โทร: ${phone}\n` +
+                    `💿 บริการ: ${service}\n` +
+                    `🏋🏼 น้ำหนัก: ${weight}\n` +
+                    `🧾 ชำระเงิน: ${payment}\n` +
+                    `📅 วันรับผ้า: ${date}\n` +
+                    `⏰ ช่วงเวลา: ${time}\n` +
+                    `📍 ที่อยู่: ${address}\n\n` +
+                    `📸 *รบกวนส่งรูปถุงผ้าในแชทต่อได้เลยครับ*`;
 
-      if (!name || !phone || !address || !date || !time) {
-        alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-        return;
-      }
-
-      const message = `🧺 การจองใหม่!\n\nชื่อ: ${name}\nเบอร์: ${phone}\nที่อยู่: ${address}\nวันที่: ${date}\nเวลา: ${time}`;
-
-      try {
+    try {
+      if (liff.isInClient()) {
         await liff.sendMessages([{ type: 'text', text: message }]);
-        alert("จองสำเร็จ! ข้อมูลถูกส่งเข้าแชทแล้ว");
+        alert("ส่งคำขอจองเรียบร้อย! เจ้าหน้าที่ได้รับข้อมูลแล้วครับ");
         liff.closeWindow();
-      } catch (err) {
-        alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + err.message);
+      } else {
+        alert("ข้อมูลของคุณ:\n" + message);
       }
-    });
+    } catch (err) {
+      alert("เกิดข้อผิดพลาด: " + err.message);
+    }
+  });
 
-    main();
-  </script>
+  main();
+</script>
+
 </body>
 </html>
