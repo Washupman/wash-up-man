@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>จองซักผ้า - Laundry Express</title>
+  <!-- LIFF SDK -->
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
+    h1 { text-align: center; color: #333; }
+    .form-group { margin: 15px 0; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
+    button { background: #00b900; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 18px; width: 100%; margin-top: 20px; }
+    .note { font-size: 14px; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>📦 จองบริการรับ-ส่งผ้าซัก</h1>
+  
+  <div class="form-group">
+    <label>ชื่อ-นามสกุล</label>
+    <input type="text" id="name" placeholder="กรอกชื่อของคุณ" required>
+  </div>
+  
+  <div class="form-group">
+    <label>เบอร์โทรศัพท์</label>
+    <input type="tel" id="phone" placeholder="เช่น 0812345678" required>
+  </div>
+  
+  <div class="form-group">
+    <label>ที่อยู่สำหรับรับผ้า (และส่งคืน)</label>
+    <textarea id="address" rows="3" placeholder="บ้านเลขที่, หมู่บ้าน, ถนน, เขต, จังหวัด" required></textarea>
+  </div>
+  
+  <div class="form-group">
+    <label>วันที่สะดวกให้ไปรับผ้า</label>
+    <input type="date" id="pickupDate" required>
+  </div>
+  
+  <div class="form-group">
+    <label>ช่วงเวลาที่สะดวก (รับผ้า)</label>
+    <select id="pickupTime" required>
+      <option value="">เลือกช่วงเวลา</option>
+      <option value="09:00-12:00">เช้า 09:00-12:00</option>
+      <option value="13:00-17:00">บ่าย 13:00-17:00</option>
+      <option value="17:00-20:00">เย็น 17:00-20:00</option>
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label>น้ำหนักผ้าโดยประมาณ</label>
+    <select id="weight">
+      <option value="">ไม่ระบุ</option>
+      <option value="น้อยกว่า 5 กก.">น้อยกว่า 5 กก.</option>
+      <option value="5-10 กก.">5-10 กก.</option>
+      <option value="10-15 กก.">10-15 กก.</option>
+      <option value="มากกว่า 15 กก.">มากกว่า 15 กก.</option>
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label>หมายเหตุเพิ่มเติม (เช่น รอยเปื้อนพิเศษ, ผ้าห่ม, จุดสังเกต)</label>
+    <textarea id="note" rows="3" placeholder="ไม่บังคับ"></textarea>
+  </div>
+  
+  <p class="note">* หลังกดส่ง ลูกค้าจะส่งข้อมูลกลับไปในแชท Line OA อัตโนมัติ</p>
+  
+  <button id="submitBtn">✅ ส่งข้อมูลการจอง</button>
+
+  <script>
+    async function main() {
+      await liff.init({ liffId: "2008812860-trP1QVCC" }); // LIFF ID ของคุณ
+      
+      // ดึงชื่อจาก Line Profile อัตโนมัติ (ถ้ามี)
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        document.getElementById('name').value = profile.displayName;
+      }
+      
+      // เมื่อกดส่ง
+      document.getElementById('submitBtn').addEventListener('click', async () => {
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const address = document.getElementById('address').value;
+        const date = document.getElementById('pickupDate').value;
+        const time = document.getElementById('pickupTime').value;
+        const weight = document.getElementById('weight').value;
+        const note = document.getElementById('note').value || "ไม่มี";
+        
+        if (!name || !phone || !address || !date || !time) {
+          alert("กรุณากรอกข้อมูลให้ครบ");
+          return;
+        }
+        
+        const message = `🧺 การจองใหม่!\n\n` +
+                        `ชื่อ: ${name}\n` +
+                        `เบอร์: ${phone}\n` +
+                        `ที่อยู่: ${address}\n` +
+                        `วันที่รับผ้า: ${date}\n` +
+                        `ช่วงเวลา: ${time}\n` +
+                        `น้ำหนักโดยประมาณ: ${weight || "ไม่ระบุ"}\n` +
+                        `หมายเหตุ: ${note}`;
+        
+        try {
+          await liff.sendMessages([{
+            type: 'text',
+            text: message
+          }]);
+          alert("ส่งข้อมูลสำเร็จ! แอดมินจะติดต่อกลับเร็ว ๆ นี้");
+          liff.closeWindow();
+        } catch (error) {
+          alert("ไม่สามารถส่งข้อความได้ กรุณาส่งในแชทปกติ");
+        }
+      });
+    }
+    
+    liff.ready.then(main);
+  </script>
+</body>
+</html>
