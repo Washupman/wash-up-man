@@ -10,28 +10,36 @@
     h1 { text-align: center; color: #333; }
     .form-group { margin: 15px 0; }
     label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-    button { background: #00b900; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 18px; width: 100%; margin-top: 20px; cursor: pointer; }
-    button:disabled { background: #ccc; }
+    input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+    
+    /* ปุ่มแชร์พิกัดแบบสวยงาม */
+    .location-btn {
+      background: #007bff; color: white; border: none; padding: 10px;
+      border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-size: 14px; width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    
+    button#submitBtn { background: #00b900; color: white; padding: 15px; border: none; border-radius: 8px; font-size: 18px; width: 100%; margin-top: 20px; cursor: pointer; }
     .note { font-size: 14px; color: #666; }
   </style>
 </head>
 <body>
-  <h1>📦 จองบริการรับ-ส่งผ้าซัก</h1>
+  <h1>📆 จองบริการรับ-ส่งผ้าซัก</h1>
   
   <div class="form-group">
     <label>ชื่อ-นามสกุล</label>
-    <input type="text" id="name" placeholder="กรอกชื่อของคุณ" required>
+    <input type="text" id="name" required>
   </div>
   
   <div class="form-group">
     <label>เบอร์โทรศัพท์</label>
-    <input type="tel" id="phone" placeholder="เช่น 0812345678" required>
+    <input type="tel" id="phone" required>
   </div>
   
   <div class="form-group">
-    <label>ที่อยู่สำหรับรับผ้า (และส่งคืน)</label>
-    <textarea id="address" rows="3" placeholder="บ้านเลขที่, หมู่บ้าน, ถนน, เขต, จังหวัด" required></textarea>
+    <label>ที่อยู่สำหรับรับผ้า</label>
+    <button type="button" class="location-btn" onclick="getGPSLocation()">📍 กดเพื่อดึงพิกัดที่อยู่ปัจจุบัน</button>
+    <textarea id="address" rows="4" placeholder="ระบุเลขที่บ้าน, ชื่อคอนโด หรือรายละเอียดเพิ่มเติม..." required></textarea>
   </div>
   
   <div class="form-group">
@@ -40,7 +48,7 @@
   </div>
   
   <div class="form-group">
-    <label>ช่วงเวลาที่สะดวก (รับผ้า)</label>
+    <label>ช่วงเวลาที่สะดวก</label>
     <select id="pickupTime" required>
       <option value="">เลือกช่วงเวลา</option>
       <option value="09:00-12:00">เช้า 09:00-12:00</option>
@@ -49,41 +57,36 @@
     </select>
   </div>
   
-  <div class="form-group">
-    <label>น้ำหนักผ้าโดยประมาณ</label>
-    <select id="weight">
-      <option value="">ไม่ระบุ</option>
-      <option value="น้อยกว่า 5 กก.">น้อยกว่า 5 กก.</option>
-      <option value="5-10 กก.">5-10 กก.</option>
-      <option value="10-15 กก.">10-15 กก.</option>
-      <option value="มากกว่า 15 กก.">มากกว่า 15 กก.</option>
-    </select>
-  </div>
-  
-  <div class="form-group">
-    <label>หมายเหตุเพิ่มเติม</label>
-    <textarea id="note" rows="3" placeholder="ไม่บังคับ"></textarea>
-  </div>
-  
-  <p class="note">* ข้อมูลการจองจะถูกส่งเข้าไปในแชท LINE ของคุณ</p>
-  
   <button id="submitBtn">✅ ส่งข้อมูลการจอง</button>
 
   <script>
     async function main() {
-      try {
-        await liff.init({ liffId: "2008812860-trP1QVCC" });
-        
-        // เช็คการ Login
-        if (!liff.isLoggedIn()) {
-          liff.login();
-        } else {
-          const profile = await liff.getProfile();
-          document.getElementById('name').value = profile.displayName;
-        }
-      } catch (err) {
-        console.error("LIFF Init Error:", err);
+      await liff.init({ liffId: "2008812860-trP1QVCC" });
+      if (!liff.isLoggedIn()) { liff.login(); }
+      const profile = await liff.getProfile();
+      document.getElementById('name').value = profile.displayName;
+    }
+
+    // ฟังก์ชันดึงพิกัดโดยใช้ GPS ของมือถือ (ไม่ต้องพึ่ง Scope ของ LINE)
+    function getGPSLocation() {
+      if (!navigator.geolocation) {
+        alert("มือถือของคุณไม่รองรับการดึงพิกัด");
+        return;
       }
+
+      alert("กำลังดึงพิกัด... โปรดกด 'อนุญาต' หรือ 'Allow' หากมีหน้าต่างเด้งถาม");
+
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+        
+        const addressBox = document.getElementById('address');
+        addressBox.value = `ตำแหน่ง Google Maps: ${mapUrl}\n\n` + addressBox.value;
+        alert("ดึงพิกัดสำเร็จ!");
+      }, function(error) {
+        alert("ไม่สามารถดึงพิกัดได้: กรุณาเปิด GPS และอนุญาตการเข้าถึงตำแหน่งในเบราว์เซอร์");
+      });
     }
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -92,39 +95,23 @@
       const address = document.getElementById('address').value;
       const date = document.getElementById('pickupDate').value;
       const time = document.getElementById('pickupTime').value;
-      const weight = document.getElementById('weight').value;
-      const note = document.getElementById('note').value || "ไม่มี";
 
       if (!name || !phone || !address || !date || !time) {
-        alert("กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน");
+        alert("กรุณากรอกข้อมูลให้ครบถ้วน");
         return;
       }
 
-      const message = `🧺 การจองใหม่!\n\n` +
-                      `ชื่อ: ${name}\n` +
-                      `เบอร์: ${phone}\n` +
-                      `ที่อยู่: ${address}\n` +
-                      `วันที่รับผ้า: ${date}\n` +
-                      `ช่วงเวลา: ${time}\n` +
-                      `น้ำหนักโดยประมาณ: ${weight || "ไม่ระบุ"}\n` +
-                      `หมายเหตุ: ${note}`;
+      const message = `✅ การจองใหม่!\n\nชื่อ: ${name}\nเบอร์: ${phone}\nที่อยู่: ${address}\nวันที่รับผ้า: ${date}\nเวลา: ${time}`;
 
       try {
-        // ตรวจสอบว่าเปิดในแอป LINE หรือไม่ (ส่งข้อความได้เฉพาะในแอป)
         if (liff.isInClient()) {
-          await liff.sendMessages([{
-            type: 'text',
-            text: message
-          }]);
-          alert("ส่งข้อมูลการจองเรียบร้อยแล้ว!");
+          await liff.sendMessages([{ type: 'text', text: message }]);
+          alert("ส่งข้อมูลเรียบร้อยแล้ว!");
           liff.closeWindow();
         } else {
-          // ถ้าเปิดใน Browser ปกติ ให้แจ้งเตือน
-          alert("ไม่สามารถส่งข้อมูลผ่าน Browser ได้ กรุณาเปิดผ่านแอป LINE\n\nข้อมูลของคุณ:\n" + message);
+          alert("กรุณาใช้งานผ่านแอป LINE เพื่อส่งข้อความ");
         }
-      } catch (error) {
-        alert("เกิดข้อผิดพลาด: " + error.message + "\nกรุณาตรวจสอบว่าคุณได้อนุญาตสิทธิ์ 'chat_message.write' ใน LINE Developers แล้ว");
-      }
+      } catch (err) { alert("เกิดข้อผิดพลาด: " + err.message); }
     });
 
     main();
