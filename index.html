@@ -1,296 +1,89 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>จองซักผ้า - WashUpMan</title>
-  
-  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  
-  <style>
-    /* --- Styles --- */
-    body { 
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-      padding: 20px; 
-      background: #f0f2f5; 
-      color: #333; 
-      line-height: 1.6; 
-      margin: 0;
-    }
-    .container { 
-      max-width: 500px; 
-      margin: 10px auto; 
-      background: white; 
-      padding: 25px; 
-      border-radius: 20px; 
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
-    }
-    
-    /* Logo Header */
-    .logo-header {
-      display: block;
-      margin: 0 auto 25px auto;
-      max-width: 220px;
-      width: 100%;
-      height: auto;
-    }
-    
-    .form-group { margin-bottom: 20px; }
-    label { 
-      display: block; 
-      margin-bottom: 8px; 
-      font-weight: bold; 
-      font-size: 14px; 
-      color: #444;
-    }
-    input, textarea, select { 
-      width: 100%; 
-      padding: 14px; 
-      border: 1px solid #e0e0e0; 
-      border-radius: 12px; 
-      font-size: 16px; 
-      box-sizing: border-box; 
-      outline: none; 
-      transition: all 0.3s;
-      background: #fdfdfd;
-    }
-    input:focus, textarea:focus { border-color: #00b900; background: #fff; }
-    
-    /* Help Text */
-    .help-text {
-      font-size: 12px;
-      color: #777;
-      margin-top: 6px;
-      line-height: 1.5;
-    }
-    
-    .location-btn {
-      background: #f0f7ff; 
-      color: #007bff; 
-      border: 1px dashed #007bff; 
-      padding: 12px;
-      border-radius: 12px; 
-      cursor: pointer; 
-      margin-bottom: 10px; 
-      font-size: 14px; 
-      width: 100%; 
-      font-weight: bold;
-    }
-    
-    .photo-alert { 
-      background: #fff9e6; 
-      color: #856404; 
-      padding: 15px; 
-      border-radius: 12px; 
-      font-size: 13px; 
-      border: 1px solid #ffeeba; 
-      margin: 20px 0; 
-      display: flex; 
-      align-items: center; 
-      gap: 10px; 
-    }
-    
-    .terms-container { 
-      font-size: 14px; 
-      margin-top: 20px; 
-      display: flex; 
-      align-items: flex-start; 
-      gap: 10px; 
-    }
-    .terms-container input { width: auto; margin-top: 4px; cursor: pointer; }
-    .terms-link { color: #007bff; text-decoration: underline; cursor: pointer; font-weight: bold; }
-    
-    button#submitBtn { 
-      background: #00b900; 
-      color: white; 
-      padding: 18px; 
-      border: none; 
-      border-radius: 15px; 
-      font-size: 18px; 
-      width: 100%; 
-      margin-top: 20px; 
-      cursor: pointer; 
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,185,0,0.2);
-    }
-    button#submitBtn:disabled { background: #ccc; cursor: not-allowed; }
-    
-    .footer-note { text-align: center; font-size: 12px; color: #aaa; margin-top: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50 p-4">
 
-<div class="container">
-  
-  <img src="https://raw.githubusercontent.com/Washupman/wash-up-man/main/Gemini_Generated_Image_oscafuoscafuosca-removebg-preview.png" 
-       alt="WashUpMan Logo" 
-       class="logo-header">
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="p-6 space-y-4">
+            <h2 class="text-2xl font-bold text-blue-600 text-center mb-6">นัดรับบริการ WashUpMan</h2>
 
-  <div class="form-group">
-    <label>ชื่อ-นามสกุล</label>
-    <input type="text" id="name" placeholder="ดึงข้อมูลจาก LINE..." required>
-  </div>
-  
-  <div class="form-group">
-    <label>เบอร์โทรศัพท์</label>
-    <input type="tel" id="phone" placeholder="เช่น 0812345678" maxlength="10" required>
-  </div>
-  
-  <div class="form-group">
-    <label>ที่อยู่สำหรับรับผ้า (และส่งคืน)</label>
-    <button type="button" class="location-btn" onclick="askGPS()">📍 กดเพื่อส่งตำแหน่งที่ตั้ง (GPS)</button>
-    <textarea id="address" rows="3" placeholder="ระบุบ้านเลขที่, ซอย, ถนน หรือชื่อคอนโด..." required></textarea>
-  </div>
+            <div class="space-y-3">
+                <input type="text" placeholder="ชื่อลูกค้า" class="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-400">
+                <input type="tel" placeholder="เบอร์โทรศัพท์" class="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-400">
+                <textarea placeholder="ที่อยู่ในการเข้ารับ" class="w-full border rounded-lg p-3 h-24 outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+                
+                <button class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-200 transition">
+                    📍 ระบุพิกัด GPS
+                </button>
+            </div>
 
-  <div class="form-group">
-    <label>ข้อมูลเพิ่มเติม</label>
-    <textarea id="note" rows="2" placeholder="เช่น จุดสังเกต หรือวิธีรับผ้า..."></textarea>
-    <div class="help-text">ระบุจุดสังเกตสถานที่ หรือวิธีรับ-ส่งผ้า เช่น หน้าบ้านมีต้นไม้ใหญ่, ฝากไว้ที่นิติ/ป้อมยาม หรือจุดที่กำหนด</div>
-  </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">บริการที่เลือก</label>
+                    <select class="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-400">
+                        <option>ซัก-อบ-พับ</option>
+                        <option>ซัก-อบ-รีด</option>
+                        <option>ผ้านวม/เครื่องนอน</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">น้ำหนักโดยประมาณ (กก.)</label>
+                    <input type="number" placeholder="0" class="w-full border rounded-lg p-3 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">วันที่นัดรับผ้า</label>
+                    <input type="date" class="w-full border rounded-lg p-3 outline-none">
+                </div>
+            </div>
 
-  <div class="form-group">
-    <label>ประเภทบริการ</label>
-    <select id="serviceType">
-      <option value="ซัก-พับ">🧺 ซัก-พับ</option>
-      <option value="ซัก-รีด">👔 ซัก-รีด</option>
-      <option value="ซักรีด+ซักพับ">👔+🧺 ซักรีด + ซักพับ</option>
-    </select>
-  </div>
-  
-  <div class="form-group">
-    <label>น้ำหนักผ้าโดยประมาณ</label>
-    <select id="weight">
-      <option value="ไม่ระบุ">ไม่ระบุ</option>
-      <option value="น้อยกว่า 5 กก.">น้อยกว่า 5 กก.</option>
-      <option value="5-10 กก.">5-10 กก.</option>
-      <option value="มากกว่า 10 กก.">มากกว่า 10 กก.</option>
-    </select>
-  </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ข้อมูลเพิ่มเติม</label>
+                <textarea placeholder="..." class="w-full border rounded-lg p-3 h-20 outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+                <p class="text-xs text-gray-500 mt-1 italic">
+                    *ระบุจุดสังเกตสถานที่ เช่น หน้าบ้านมีต้นไม้ใหญ่, ฝากไว้ที่นิติ/ป้อมยาม หรือ จุดที่กำหนด
+                </p>
+            </div>
 
-  <div class="form-group">
-    <label>รูปแบบการชำระค่าบริการ</label>
-    <select id="payment">
-      <option value="เงินสด">💵 เงินสด</option>
-      <option value="โอนจ่าย">📱 โอนจ่าย</option>
-    </select>
-  </div>
+            <div class="bg-gray-50 p-3 rounded-lg border text-sm text-gray-600 space-y-2">
+                <p class="font-bold text-gray-800 underline">เงื่อนไขการใช้บริการ</p>
+                <ul class="list-decimal ml-4 space-y-1 text-[12px]">
+                    <li>โปรดตรวจสอบของมีค่าในกระเป๋าผ้าก่อนส่ง (ร้านไม่รับผิดชอบกรณีสูญหายทุกกรณี)</li>
+                    <li>ร้านจะส่งผ้าคืนภายในวันที่ 3 หลังจากวันรับผ้า</li>
+                    <li>หากผ้าเสียหายจากการซัก ชดเชยไม่เกิน 3 เท่าของค่าบริการชิ้นนั้น</li>
+                    <li>กรณีผ้าสีตกใส่กัน ร้านขอพิจารณาชดเชยตามความเหมาะสม</li>
+                    <li>โปรดแจ้งปัญหาภายใน 24 ชม. หลังจากได้รับผ้า</li>
+                    <li>หากติดต่อลูกค้าไม่ได้เกิน 15 นาที ขอสงวนสิทธิ์เลื่อนนัดเป็นรอบถัดไป</li>
+                    <li>หากพบรอยชำรุดเดิม ร้านจะแจ้งให้ทราบเพื่อยืนยันก่อนซักทุกครั้ง</li>
+                </ul>
+                <div class="flex items-start gap-2 pt-2 border-t mt-2">
+                    <input type="checkbox" id="terms" class="mt-1 w-4 h-4 text-blue-600">
+                    <label for="terms" class="text-xs font-medium cursor-pointer">ฉันยอมรับเงื่อนไขการใช้บริการข้างต้น</label>
+                </div>
+            </div>
 
-  <div class="form-group">
-    <label>วัน-เวลาที่นัดรับผ้า</label>
-    <input type="date" id="pickupDate" required>
-    <select id="pickupTime" style="margin-top: 10px;">
-      <option value="รอบเช้า 07.30 - 09.00">🌅 รอบเช้า 07.30 - 09.00</option>
-      <option value="รอบสาย 09.00 - 10.30">☀️ รอบสาย 09.00 - 10.30</option>
-      <option value="รอบเย็น 16.30 - 18.00">🌇 รอบเย็น 16.30 - 18.00</option>
-      <option value="รอบค่ำ 18.00 - 19.30">🌃 รอบค่ำ 18.00 - 19.30</option>
-      <option value="รอบดึก 20.00 - 21.30">🌑 รอบดึก 20.00 - 21.30</option>
-    </select>
-  </div>
+            <div class="pt-4">
+                <p class="text-sm font-bold text-red-500 text-center mb-2">
+                    ⚠️ อย่าลืม! เช็กของมีค่าในกระเป๋า และเราจะส่งคืนภายใน 3 วันครับ
+                </p>
+                
+                <button class="w-full bg-blue-600 text-white py-4 rounded-xl text-lg font-bold shadow-md hover:bg-blue-700 active:scale-95 transition">
+                    ยืนยันนัดรับผ้า
+                </button>
 
-  <div class="photo-alert">
-    <span>📸</span>
-    <span><b>สำคัญ:</b> หลังกดยืนยันแล้ว รบกวนถ่ายรูปถุงผ้าส่งมาในแชทด้วยนะครับ</span>
-  </div>
-
-  <div class="terms-container">
-    <input type="checkbox" id="terms">
-    <label for="terms">ยอมรับ <span class="terms-link" onclick="showTerms()">เงื่อนไขการใช้บริการ</span></label>
-  </div>
-  
-  <button id="submitBtn">✅ ยืนยันการจอง</button>
-  <p class="footer-note">WashUpMan บริการรับ-ส่งผ้าถึงที่</p>
-</div>
-
-<script>
-  // --- 1. ป้องกันวันที่ย้อนหลัง ---
-  const dateInput = document.getElementById('pickupDate');
-  const today = new Date().toISOString().split('T')[0];
-  dateInput.setAttribute('min', today);
-  dateInput.value = today;
-
-  // --- 2. เริ่มต้นระบบ LIFF ---
-  async function main() {
-    try {
-      await liff.init({ liffId: "2008812860-trP1QVCC" });
-      if (!liff.isLoggedIn()) {
-        liff.login();
-      } else {
-        const profile = await liff.getProfile();
-        document.getElementById('name').value = profile.displayName;
-      }
-    } catch (err) { console.error("LIFF Error:", err); }
-  }
-
-  // --- 3. เงื่อนไข 7 ข้อ ---
-  function showTerms() {
-    alert(
-      "เงื่อนไขการใช้บริการ (Terms & Conditions)\n" +
-      "----------------------------------\n" +
-      "1. ตรวจสอบของมีค่า: โปรดตรวจสอบก่อนส่งมอบ ร้านไม่รับผิดชอบกรณีสูญหายในทุกกรณี\n" +
-      "2. ระยะเวลาส่งคืน: ร้านจะส่งผ้าคืนภายในวันที่ 3 หลังจากวันรับผ้า\n" +
-      "3. การชดเชย: หากเสียหายจากการซัก ชดเชยไม่เกิน 3 เท่าของค่าบริการชิ้นนั้น\n" +
-      "4. กรณีผ้าสีตก: หากเกิดกรณีสีตกใส่กัน ร้านขอพิจารณาชดเชยตามความเหมาะสม\n" +
-      "5. การรักษาสิทธิ์: โปรดแจ้งปัญหาภายใน 24 ชม. หลังจากได้รับผ้า\n" +
-      "6. การนัดหมาย: หากติดต่อไม่ได้เกิน 15 นาที ขอสงวนสิทธิ์เลื่อนนัดเป็นรอบถัดไป\n" +
-      "7. รอยชำรุดเดิม: หากพบรอยชำรุดก่อนซัก ร้านจะแจ้งให้ทราบเพื่อยืนยันก่อนดำเนินการ"
-    );
-  }
-
-  // --- 4. ฟังก์ชัน GPS ---
-  function askGPS() {
-    if (navigator.geolocation) {
-      alert("กำลังค้นหาตำแหน่งของคุณ...");
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-        document.getElementById('address').value = "📍 GPS: " + mapUrl + "\n" + document.getElementById('address').value;
-        alert("ดึงพิกัดสำเร็จ!");
-      }, function() { alert("กรุณาเปิด GPS และอนุญาตสิทธิ์"); }, { enableHighAccuracy: true });
-    }
-  }
-
-  // --- 5. ส่งข้อมูล ---
-  document.getElementById('submitBtn').addEventListener('click', async () => {
-    const btn = document.getElementById('submitBtn');
-    if(!document.getElementById('terms').checked) {
-      alert("กรุณายอมรับเงื่อนไขการใช้บริการก่อนครับ");
-      return;
-    }
-
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const address = document.getElementById('address').value.trim();
-    const note = document.getElementById('note').value.trim();
-    const service = document.getElementById('serviceType').value;
-    const date = document.getElementById('pickupDate').value;
-    const time = document.getElementById('pickupTime').value;
-
-    if (!name || !phone || !address || !date) {
-      alert("กรุณากรอกข้อมูลสำคัญให้ครบถ้วน");
-      return;
-    }
-
-    btn.disabled = true;
-    btn.innerText = "กำลังส่งข้อมูล...";
-
-    const message = `🧺 การจองใหม่ (WashUpMan)\n\n👤 ชื่อ: ${name}\n📞 เบอร์: ${phone}\n📅 วันที่: ${date}\n⏰ ช่วงเวลา: ${time}\n💿 บริการ: ${service}\n📍 ที่อยู่: ${address}\n📝 เพิ่มเติม: ${note || '-'}\n\n📸 *รบกวนส่งรูปถุงผ้าในแชทต่อได้เลยครับ*`;
-
-    try {
-      if (liff.isInClient()) {
-        await liff.sendMessages([{ type: 'text', text: message }]);
-        alert("จองสำเร็จ! ขอบคุณที่ใช้บริการ WashUpMan ครับ");
-        liff.closeWindow();
-      } else {
-        alert("ข้อมูลที่จะส่ง:\n\n" + message);
-        btn.disabled = false;
-        btn.innerText = "✅ ยืนยันการจอง";
-      }
-    } catch (err) { alert("Error: " + err.message); btn.disabled = false; }
-  });
-
-  main();
-</script>
+                <p class="text-xs text-blue-500 text-center mt-3 font-medium">
+                    *ในวันส่งผ้าคืน เจ้าหน้าที่จะโทรติดต่อก่อนนำผ้าไปส่งคืนทุกครั้ง
+                </p>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
