@@ -8,33 +8,33 @@
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   
   <style>
-    /* --- Styles --- */
+    /* --- Base Style --- */
     body { 
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
       padding: 20px; 
       background: #f0f2f5; 
       color: #333; 
-      line-height: 1.6; 
       margin: 0;
     }
     .container { 
       max-width: 500px; 
-      margin: 10px auto; 
+      margin: 20px auto; 
       background: white; 
-      padding: 25px; 
+      padding: 30px; 
       border-radius: 20px; 
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08); 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
     }
     
-    /* Logo Header */
+    /* --- Header & Logo --- */
     .logo-header {
       display: block;
       margin: 0 auto 25px auto;
-      max-width: 220px;
+      max-width: 200px;
       width: 100%;
       height: auto;
     }
     
+    /* --- Form Elements --- */
     .form-group { margin-bottom: 20px; }
     label { 
       display: block; 
@@ -51,12 +51,15 @@
       font-size: 16px; 
       box-sizing: border-box; 
       outline: none; 
-      transition: all 0.3s;
-      background: #fdfdfd;
+      transition: all 0.3s ease;
+      background: #fafafa;
     }
-    input:focus, textarea:focus { border-color: #00b900; background: #fff; }
+    input:focus, textarea:focus, select:focus { 
+      border-color: #00b900; 
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(0,185,0,0.1);
+    }
     
-    /* Help Text */
     .help-text {
       font-size: 12px;
       color: #777;
@@ -64,8 +67,9 @@
       line-height: 1.5;
     }
     
+    /* --- Buttons --- */
     .location-btn {
-      background: #f0f7ff; 
+      background: #f8f9fa; 
       color: #007bff; 
       border: 1px dashed #007bff; 
       padding: 12px;
@@ -75,8 +79,28 @@
       font-size: 14px; 
       width: 100%; 
       font-weight: bold;
+      transition: 0.3s;
     }
+    .location-btn:hover { background: #e7f1ff; }
     
+    button#submitBtn { 
+      background: #00b900; 
+      color: white; 
+      padding: 18px; 
+      border: none; 
+      border-radius: 15px; 
+      font-size: 18px; 
+      width: 100%; 
+      margin-top: 25px; 
+      cursor: pointer; 
+      font-weight: bold; 
+      box-shadow: 0 4px 15px rgba(0,185,0,0.3);
+      transition: 0.3s;
+    }
+    button#submitBtn:active { transform: scale(0.98); }
+    button#submitBtn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+    
+    /* --- Alerts & Terms --- */
     .photo-alert { 
       background: #fff9e6; 
       color: #856404; 
@@ -98,30 +122,24 @@
       gap: 10px; 
     }
     .terms-container input { width: auto; margin-top: 4px; cursor: pointer; }
-    .terms-link { color: #007bff; text-decoration: underline; cursor: pointer; font-weight: bold; }
-    
-    button#submitBtn { 
-      background: #00b900; 
-      color: white; 
-      padding: 18px; 
-      border: none; 
-      border-radius: 15px; 
-      font-size: 18px; 
-      width: 100%; 
-      margin-top: 20px; 
+    .terms-link { 
+      color: #007bff; 
+      text-decoration: underline; 
       cursor: pointer; 
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,185,0,0.2);
+      font-weight: bold; 
     }
-    button#submitBtn:disabled { background: #ccc; cursor: not-allowed; }
     
-    .footer-note { text-align: center; font-size: 12px; color: #aaa; margin-top: 20px; }
+    .footer-note { 
+      text-align: center; 
+      font-size: 12px; 
+      color: #aaa; 
+      margin-top: 20px; 
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  
   <img src="https://raw.githubusercontent.com/Washupman/wash-up-man/main/Gemini_Generated_Image_oscafuoscafuosca-removebg-preview.png" 
        alt="WashUpMan Logo" 
        class="logo-header">
@@ -144,7 +162,7 @@
 
   <div class="form-group">
     <label>ข้อมูลเพิ่มเติม</label>
-    <textarea id="note" rows="2" placeholder="เช่น จุดสังเกต หรือวิธีรับผ้า..."></textarea>
+    <textarea id="note" rows="2" placeholder="เช่น จุดสังเกตหน้าบ้าน..."></textarea>
     <div class="help-text">ระบุจุดสังเกตสถานที่ หรือวิธีรับ-ส่งผ้า เช่น หน้าบ้านมีต้นไม้ใหญ่, ฝากไว้ที่นิติ/ป้อมยาม หรือจุดที่กำหนด</div>
   </div>
 
@@ -170,8 +188,8 @@
   <div class="form-group">
     <label>รูปแบบการชำระค่าบริการ</label>
     <select id="payment">
-      <option value="เงินสด">💵 เงินสด</option>
-      <option value="โอนจ่าย">📱 โอนจ่าย</option>
+      <option value="เงินสด(เจ้าหน้าที่รับผ้า)">💵 เงินสด</option>
+      <option value="โอนจ่าย(QR code)">📱 โอนจ่าย</option>
     </select>
   </div>
 
@@ -202,13 +220,13 @@
 </div>
 
 <script>
-  // --- 1. ป้องกันวันที่ย้อนหลัง ---
+  // --- 1. Initial Logic ---
   const dateInput = document.getElementById('pickupDate');
   const today = new Date().toISOString().split('T')[0];
   dateInput.setAttribute('min', today);
   dateInput.value = today;
 
-  // --- 2. เริ่มต้นระบบ LIFF ---
+  // --- 2. LIFF Initialization ---
   async function main() {
     try {
       await liff.init({ liffId: "2008812860-trP1QVCC" });
@@ -218,25 +236,26 @@
         const profile = await liff.getProfile();
         document.getElementById('name').value = profile.displayName;
       }
-    } catch (err) { console.error("LIFF Error:", err); }
+    } catch (err) {
+      console.error("LIFF Error:", err);
+    }
   }
 
-  // --- 3. เงื่อนไข 7 ข้อ ---
+  // --- 3. Functions ---
   function showTerms() {
     alert(
       "เงื่อนไขการใช้บริการ (Terms & Conditions)\n" +
       "----------------------------------\n" +
-      "1. ตรวจสอบของมีค่า: โปรดตรวจสอบก่อนส่งมอบ ร้านไม่รับผิดชอบกรณีสูญหายในทุกกรณี\n" +
-      "2. ระยะเวลาส่งคืน: ร้านจะส่งผ้าคืนภายในวันที่ 3 หลังจากวันรับผ้า\n" +
-      "3. การชดเชย: หากเสียหายจากการซัก ชดเชยไม่เกิน 3 เท่าของค่าบริการชิ้นนั้น\n" +
-      "4. กรณีผ้าสีตก: หากเกิดกรณีสีตกใส่กัน ร้านขอพิจารณาชดเชยตามความเหมาะสม\n" +
-      "5. การรักษาสิทธิ์: โปรดแจ้งปัญหาภายใน 24 ชม. หลังจากได้รับผ้า\n" +
-      "6. การนัดหมาย: หากติดต่อไม่ได้เกิน 15 นาที ขอสงวนสิทธิ์เลื่อนนัดเป็นรอบถัดไป\n" +
-      "7. รอยชำรุดเดิม: หากพบรอยชำรุดก่อนซัก ร้านจะแจ้งให้ทราบเพื่อยืนยันก่อนดำเนินการ"
+      "1. ตรวจสอบของมีค่า: ร้านไม่รับผิดชอบกรณีสูญหายในทุกกรณี\n" +
+      "2. ระยะเวลาส่งคืน: ภายในวันที่ 3 หลังจากวันรับผ้า\n" +
+      "3. ความเสียหาย: ชดเชยไม่เกิน 3 เท่าของค่าบริการชิ้นนั้น\n" +
+      "4. ผ้าสีตก: พิจารณาชดเชยตามความเหมาะสมรายกรณี\n" +
+      "5. รักษาสิทธิ์: โปรดแจ้งปัญหาภายใน 24 ชม. หลังได้รับผ้า\n" +
+      "6. การนัดหมาย: หากติดต่อไม่ได้เกิน 15 นาที ขอเลื่อนนัดเป็นรอบถัดไป\n" +
+      "7. รอยชำรุดเดิม: ร้านจะแจ้งให้ทราบก่อนดำเนินการซัก"
     );
   }
 
-  // --- 4. ฟังก์ชัน GPS ---
   function askGPS() {
     if (navigator.geolocation) {
       alert("กำลังค้นหาตำแหน่งของคุณ...");
@@ -244,13 +263,16 @@
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
         const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-        document.getElementById('address').value = "📍 GPS: " + mapUrl + "\n" + document.getElementById('address').value;
+        const addrField = document.getElementById('address');
+        addrField.value = "📍 GPS: " + mapUrl + "\n" + addrField.value;
         alert("ดึงพิกัดสำเร็จ!");
-      }, function() { alert("กรุณาเปิด GPS และอนุญาตสิทธิ์"); }, { enableHighAccuracy: true });
+      }, function() {
+        alert("ไม่สามารถเข้าถึงพิกัดได้ กรุณาเปิด GPS และอนุญาตสิทธิ์");
+      }, { enableHighAccuracy: true });
     }
   }
 
-  // --- 5. ส่งข้อมูล ---
+  // --- 4. Submit Handling ---
   document.getElementById('submitBtn').addEventListener('click', async () => {
     const btn = document.getElementById('submitBtn');
     if(!document.getElementById('terms').checked) {
@@ -258,23 +280,42 @@
       return;
     }
 
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const address = document.getElementById('address').value.trim();
-    const note = document.getElementById('note').value.trim();
-    const service = document.getElementById('serviceType').value;
-    const date = document.getElementById('pickupDate').value;
-    const time = document.getElementById('pickupTime').value;
+    const fields = {
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      address: document.getElementById('address').value.trim(),
+      note: document.getElementById('note').value.trim(),
+      service: document.getElementById('serviceType').value,
+      weight: document.getElementById('weight').value,
+      payment: document.getElementById('payment').value,
+      date: document.getElementById('pickupDate').value,
+      time: document.getElementById('pickupTime').value
+    };
 
-    if (!name || !phone || !address || !date) {
-      alert("กรุณากรอกข้อมูลสำคัญให้ครบถ้วน");
+    if (!fields.name || !fields.phone || !fields.address || !fields.date) {
+      alert("กรุณากรอกข้อมูลสำคัญ (ชื่อ, เบอร์โทร, ที่อยู่, วันที่) ให้ครบถ้วน");
+      return;
+    }
+
+    if (fields.phone.length < 10) {
+      alert("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (10 หลัก)");
       return;
     }
 
     btn.disabled = true;
     btn.innerText = "กำลังส่งข้อมูล...";
 
-    const message = `🧺 การจองใหม่ (WashUpMan)\n\n👤 ชื่อ: ${name}\n📞 เบอร์: ${phone}\n📅 วันที่: ${date}\n⏰ ช่วงเวลา: ${time}\n💿 บริการ: ${service}\n📍 ที่อยู่: ${address}\n📝 เพิ่มเติม: ${note || '-'}\n\n📸 *รบกวนส่งรูปถุงผ้าในแชทต่อได้เลยครับ*`;
+    const message = `🧺 การจองใหม่ (WashUpMan)\n\n` +
+                    `👤 ชื่อ: ${fields.name}\n` +
+                    `📞 เบอร์: ${fields.phone}\n` +
+                    `📅 วันที่: ${fields.date}\n` +
+                    `⏰ ช่วงเวลา: ${fields.time}\n` +
+                    `💿 บริการ: ${fields.service}\n` +
+                    `🏋🏼 น้ำหนัก: ${fields.weight}\n` +
+                    `🧾 ชำระ: ${fields.payment}\n` +
+                    `📍 ที่อยู่: ${fields.address}\n` +
+                    `📝 เพิ่มเติม: ${fields.note || '-'}\n\n` +
+                    `📸 *รบกวนส่งรูปถุงผ้าในแชทต่อได้เลยครับ*`;
 
     try {
       if (liff.isInClient()) {
@@ -282,11 +323,15 @@
         alert("จองสำเร็จ! ขอบคุณที่ใช้บริการ WashUpMan ครับ");
         liff.closeWindow();
       } else {
-        alert("ข้อมูลที่จะส่ง:\n\n" + message);
+        alert("แสดงตัวอย่างข้อความ (Browser Mode):\n\n" + message);
         btn.disabled = false;
         btn.innerText = "✅ ยืนยันการจอง";
       }
-    } catch (err) { alert("Error: " + err.message); btn.disabled = false; }
+    } catch (err) {
+      alert("เกิดข้อผิดพลาด: " + err.message);
+      btn.disabled = false;
+      btn.innerText = "✅ ยืนยันการจอง";
+    }
   });
 
   main();
