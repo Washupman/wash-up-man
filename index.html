@@ -3,42 +3,147 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>จองซักผ้า - Laundry Express</title>
+  <title>จองซักผ้า - WashUpMan</title>
+  
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  
   <style>
-    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; background: #f0f2f5; color: #333; line-height: 1.6; }
-    .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    h1 { text-align: center; color: #00b900; margin-bottom: 25px; font-size: 24px; }
-    
-    .form-group { margin-bottom: 18px; }
-    label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
-    input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
-    input:focus, textarea:focus { border-color: #00b900; }
-    
-    .location-btn {
-      background: #007bff; color: white; border: none; padding: 12px;
-      border-radius: 10px; cursor: pointer; margin-bottom: 10px; font-size: 15px; width: 100%; font-weight: bold;
-      transition: background 0.3s;
+    /* --- Base Style --- */
+    body { 
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+      padding: 20px; 
+      background: #f0f2f5; 
+      color: #333; 
+      margin: 0;
     }
-    .location-btn:active { background: #0056b3; }
+    .container { 
+      max-width: 500px; 
+      margin: 20px auto; 
+      background: white; 
+      padding: 30px; 
+      border-radius: 20px; 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+    }
     
-    .photo-alert { background: #fff9e6; color: #856404; padding: 12px; border-radius: 10px; font-size: 13px; border: 1px solid #ffeeba; margin: 15px 0; display: flex; align-items: center; gap: 8px; }
+    /* --- Header & Logo --- */
+    .logo-header {
+      display: block;
+      margin: 0 auto 25px auto;
+      max-width: 200px;
+      width: 100%;
+      height: auto;
+    }
     
-    .terms-container { font-size: 13px; margin-top: 20px; display: flex; align-items: flex-start; gap: 10px; }
-    .terms-container input { width: auto; margin-top: 3px; cursor: pointer; }
-    .terms-link { color: #007bff; text-decoration: underline; cursor: pointer; font-weight: bold; }
+    /* --- Form Elements --- */
+    .form-group { margin-bottom: 20px; }
+    label { 
+      display: block; 
+      margin-bottom: 8px; 
+      font-weight: bold; 
+      font-size: 14px; 
+      color: #444;
+    }
+    input, textarea, select { 
+      width: 100%; 
+      padding: 14px; 
+      border: 1px solid #e0e0e0; 
+      border-radius: 12px; 
+      font-size: 16px; 
+      box-sizing: border-box; 
+      outline: none; 
+      transition: all 0.3s ease;
+      background: #fafafa;
+    }
+    input:focus, textarea:focus, select:focus { 
+      border-color: #00b900; 
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(0,185,0,0.1);
+    }
     
-    button#submitBtn { background: #00b900; color: white; padding: 16px; border: none; border-radius: 10px; font-size: 18px; width: 100%; margin-top: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    button#submitBtn:active { background: #009900; transform: translateY(2px); }
+    .help-text {
+      font-size: 12px;
+      color: #777;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
     
-    .footer-note { text-align: center; font-size: 12px; color: #888; margin-top: 15px; }
+    /* --- Buttons --- */
+    .location-btn {
+      background: #f8f9fa; 
+      color: #007bff; 
+      border: 1px dashed #007bff; 
+      padding: 12px;
+      border-radius: 12px; 
+      cursor: pointer; 
+      margin-bottom: 10px; 
+      font-size: 14px; 
+      width: 100%; 
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .location-btn:hover { background: #e7f1ff; }
+    
+    button#submitBtn { 
+      background: #00b900; 
+      color: white; 
+      padding: 18px; 
+      border: none; 
+      border-radius: 15px; 
+      font-size: 18px; 
+      width: 100%; 
+      margin-top: 25px; 
+      cursor: pointer; 
+      font-weight: bold; 
+      box-shadow: 0 4px 15px rgba(0,185,0,0.3);
+      transition: 0.3s;
+    }
+    button#submitBtn:active { transform: scale(0.98); }
+    button#submitBtn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+    
+    /* --- Alerts & Terms --- */
+    .photo-alert { 
+      background: #fff9e6; 
+      color: #856404; 
+      padding: 15px; 
+      border-radius: 12px; 
+      font-size: 13px; 
+      border: 1px solid #ffeeba; 
+      margin: 20px 0; 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+    }
+    
+    .terms-container { 
+      font-size: 14px; 
+      margin-top: 20px; 
+      display: flex; 
+      align-items: flex-start; 
+      gap: 10px; 
+    }
+    .terms-container input { width: auto; margin-top: 4px; cursor: pointer; }
+    .terms-link { 
+      color: #007bff; 
+      text-decoration: underline; 
+      cursor: pointer; 
+      font-weight: bold; 
+    }
+    
+    .footer-note { 
+      text-align: center; 
+      font-size: 12px; 
+      color: #aaa; 
+      margin-top: 20px; 
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>🔅 ซักอบรีด ซีดอบรัก</h1>
-  
+  <img src="https://raw.githubusercontent.com/Washupman/wash-up-man/main/Gemini_Generated_Image_vz4n5tvz4n5tvz4n.png" 
+       alt="WashUpMan Logo" 
+       class="logo-header">
+
   <div class="form-group">
     <label>ชื่อ-นามสกุล</label>
     <input type="text" id="name" placeholder="ดึงข้อมูลจาก LINE..." required>
@@ -53,6 +158,12 @@
     <label>ที่อยู่สำหรับรับผ้า (และส่งคืน)</label>
     <button type="button" class="location-btn" onclick="askGPS()">📍 กดเพื่อส่งตำแหน่งที่ตั้ง (GPS)</button>
     <textarea id="address" rows="3" placeholder="ระบุบ้านเลขที่, ซอย, ถนน หรือชื่อคอนโด..." required></textarea>
+  </div>
+
+  <div class="form-group">
+    <label>ข้อมูลเพิ่มเติม</label>
+    <textarea id="note" rows="2" placeholder="เช่น จุดสังเกตหน้าบ้าน..."></textarea>
+    <div class="help-text">ระบุจุดสังเกตสถานที่ หรือวิธีรับ-ส่งผ้า เช่น หน้าบ้านมีต้นไม้ใหญ่, ฝากไว้ที่นิติ/ป้อมยาม หรือจุดที่กำหนด</div>
   </div>
 
   <div class="form-group">
@@ -83,31 +194,39 @@
   </div>
 
   <div class="form-group">
-    <label>วันที่และช่วงเวลาที่สะดวกรับผ้า</label>
+    <label>วัน-เวลาที่นัดรับผ้า</label>
     <input type="date" id="pickupDate" required>
-    <select id="pickupTime" style="margin-top: 8px;">
-      <option value="09:00-12:00">เช้า 09:00-12:00</option>
-      <option value="13:00-17:00">บ่าย 13:00-17:00</option>
-      <option value="17:00-20:00">เย็น 17:00-20:00</option>
+    <select id="pickupTime" style="margin-top: 10px;">
+      <option value="รอบเช้า 07.30 - 09.00">🌅 รอบเช้า 07.30 - 09.00</option>
+      <option value="รอบสาย 09.00 - 10.30">☀️ รอบสาย 09.00 - 10.30</option>
+      <option value="รอบเย็น 16.30 - 18.00">🌇 รอบเย็น 16.30 - 18.00</option>
+      <option value="รอบค่ำ 18.00 - 19.30">🌃 รอบค่ำ 18.00 - 19.30</option>
+      <option value="รอบดึก 20.00 - 21.30">🌑 รอบดึก 20.00 - 21.30</option>
     </select>
   </div>
 
   <div class="photo-alert">
     <span>📸</span>
-    <span><b>สำคัญ:</b> หลังกดส่งจองแล้ว รบกวนถ่ายรูปถุงผ้าส่งมาในแชทเพิ่มด้วยนะครับ</span>
+    <span><b>สำคัญ:</b> หลังกดยืนยันแล้ว รบกวนถ่ายรูปถุงผ้าส่งมาในแชทด้วยนะครับ</span>
   </div>
 
   <div class="terms-container">
     <input type="checkbox" id="terms">
-    <label for="terms">ยอมรับ <span class="terms-link" onclick="showTerms()">เงื่อนไขการรับประกัน</span> (กรณีผ้าสีตก/ของสูญหาย)</label>
+    <label for="terms">ยอมรับ <span class="terms-link" onclick="showTerms()">เงื่อนไขการใช้บริการ</span></label>
   </div>
   
   <button id="submitBtn">✅ ยืนยันการจอง</button>
-  <p class="footer-note">ข้อมูลจะถูกส่งไปยัง LINE OA อัตโนมัติ</p>
+  <p class="footer-note">WashUpMan บริการรับ-ส่งผ้าถึงที่</p>
 </div>
 
 <script>
-  // เริ่มต้น LIFF
+  // --- 1. Initial Logic ---
+  const dateInput = document.getElementById('pickupDate');
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.setAttribute('min', today);
+  dateInput.value = today;
+
+  // --- 2. LIFF Initialization ---
   async function main() {
     try {
       await liff.init({ liffId: "2008812860-trP1QVCC" });
@@ -122,79 +241,96 @@
     }
   }
 
-  // แสดงเงื่อนไขการบริการ
+  // --- 3. Functions ---
   function showTerms() {
     alert(
-      "เงื่อนไขการใช้บริการ Laundry Express\n" +
+      "เงื่อนไขการใช้บริการ (Terms & Conditions)\n" +
       "----------------------------------\n" +
-      "1. โปรดนำของมีค่าออกจากกระเป๋าผ้า ร้านไม่รับผิดชอบกรณีสูญหาย\n" +
-      "2. ความเสียหายจากการซัก ร้านชดเชยไม่เกิน 3 เท่าของค่าบริการชิ้นนั้น\n" +
-      "3. กรณีผ้าสีตกใส่กัน ร้านขอพิจารณาชดเชยตามความเหมาะสม\n" +
-      "4. โปรดแจ้งหากพบปัญหาภายใน 24 ชม. หลังจากได้รับผ้า\n" +
-      "5. ชำระค่าบริการโดยตรงกับเจ้าหน้าที่หน้างานเท่านั้น"
+      "1. ตรวจสอบของมีค่า: ร้านไม่รับผิดชอบกรณีสูญหายในทุกกรณี\n" +
+      "2. ระยะเวลาส่งคืน: ภายในวันที่ 3 หลังจากวันรับผ้า\n" +
+      "3. ความเสียหาย: ชดเชยไม่เกิน 3 เท่าของค่าบริการชิ้นนั้น\n" +
+      "4. ผ้าสีตก: พิจารณาชดเชยตามความเหมาะสมรายกรณี\n" +
+      "5. รักษาสิทธิ์: โปรดแจ้งปัญหาภายใน 24 ชม. หลังได้รับผ้า\n" +
+      "6. การนัดหมาย: หากติดต่อไม่ได้เกิน 15 นาที ขอเลื่อนนัดเป็นรอบถัดไป\n" +
+      "7. รอยชำรุดเดิม: ร้านจะแจ้งให้ทราบก่อนดำเนินการซัก"
     );
   }
 
-  // ดึงพิกัด GPS
   function askGPS() {
     if (navigator.geolocation) {
-      alert("กำลังค้นหาตำแหน่งพิกัดของคุณ...");
+      alert("กำลังค้นหาตำแหน่งของคุณ...");
       navigator.geolocation.getCurrentPosition(function(position) {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
         const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-        const addressField = document.getElementById('address');
-        addressField.value = "📍 พิกัด GPS: " + mapUrl + "\n" + addressField.value;
+        const addrField = document.getElementById('address');
+        addrField.value = "📍 GPS: " + mapUrl + "\n" + addrField.value;
         alert("ดึงพิกัดสำเร็จ!");
       }, function() {
-        alert("ไม่สามารถดึงตำแหน่งได้ กรุณาเปิด GPS และอนุญาตการเข้าถึงตำแหน่ง");
-      });
+        alert("ไม่สามารถเข้าถึงพิกัดได้ กรุณาเปิด GPS และอนุญาตสิทธิ์");
+      }, { enableHighAccuracy: true });
     }
   }
 
-  // ส่งข้อมูล
+  // --- 4. Submit Handling ---
   document.getElementById('submitBtn').addEventListener('click', async () => {
-    const isAgreed = document.getElementById('terms').checked;
-    if(!isAgreed) {
-      alert("กรุณาติ๊กยอมรับเงื่อนไขการรับประกันก่อนส่งข้อมูลครับ");
+    const btn = document.getElementById('submitBtn');
+    if(!document.getElementById('terms').checked) {
+      alert("กรุณายอมรับเงื่อนไขการใช้บริการก่อนครับ");
       return;
     }
 
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const address = document.getElementById('address').value;
-    const service = document.getElementById('serviceType').value;
-    const payment = document.getElementById('payment').value;
-    const weight = document.getElementById('weight').value;
-    const date = document.getElementById('pickupDate').value;
-    const time = document.getElementById('pickupTime').value;
+    const fields = {
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      address: document.getElementById('address').value.trim(),
+      note: document.getElementById('note').value.trim(),
+      service: document.getElementById('serviceType').value,
+      weight: document.getElementById('weight').value,
+      payment: document.getElementById('payment').value,
+      date: document.getElementById('pickupDate').value,
+      time: document.getElementById('pickupTime').value
+    };
 
-    if (!name || !phone || !address || !date) {
-      alert("กรุณากรอกข้อมูลส่วนสำคัญให้ครบถ้วน");
+    if (!fields.name || !fields.phone || !fields.address || !fields.date) {
+      alert("กรุณากรอกข้อมูลสำคัญ (ชื่อ, เบอร์โทร, ที่อยู่, วันที่) ให้ครบถ้วน");
       return;
     }
 
-    const message = `🧺 การจองใหม่ (Laundry Express)\n\n` +
-                    `👤 ชื่อ: ${name}\n` +
-                    `📞 เบอร์โทร: ${phone}\n` +
-                    `💿 บริการ: ${service}\n` +
-                    `🏋🏼 น้ำหนัก: ${weight}\n` +
-                    `🧾 ชำระเงิน: ${payment}\n` +
-                    `📅 วันรับผ้า: ${date}\n` +
-                    `⏰ ช่วงเวลา: ${time}\n` +
-                    `📍 ที่อยู่: ${address}\n\n` +
+    if (fields.phone.length < 10) {
+      alert("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (10 หลัก)");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "กำลังส่งข้อมูล...";
+
+    const message = `🧺 การจองใหม่ (WashUpMan)\n\n` +
+                    `👤 ชื่อ: ${fields.name}\n` +
+                    `📞 เบอร์: ${fields.phone}\n` +
+                    `📅 วันที่: ${fields.date}\n` +
+                    `⏰ ช่วงเวลา: ${fields.time}\n` +
+                    `💿 บริการ: ${fields.service}\n` +
+                    `🏋🏼 น้ำหนัก: ${fields.weight}\n` +
+                    `🧾 ชำระ: ${fields.payment}\n` +
+                    `📍 ที่อยู่: ${fields.address}\n` +
+                    `📝 เพิ่มเติม: ${fields.note || '-'}\n\n` +
                     `📸 *รบกวนส่งรูปถุงผ้าในแชทต่อได้เลยครับ*`;
 
     try {
       if (liff.isInClient()) {
         await liff.sendMessages([{ type: 'text', text: message }]);
-        alert("ส่งคำขอจองเรียบร้อย! เจ้าหน้าที่ได้รับข้อมูลแล้วครับ");
+        alert("จองสำเร็จ! ขอบคุณที่ใช้บริการ WashUpMan ครับ");
         liff.closeWindow();
       } else {
-        alert("ข้อมูลของคุณ:\n" + message);
+        alert("แสดงตัวอย่างข้อความ (Browser Mode):\n\n" + message);
+        btn.disabled = false;
+        btn.innerText = "✅ ยืนยันการจอง";
       }
     } catch (err) {
       alert("เกิดข้อผิดพลาด: " + err.message);
+      btn.disabled = false;
+      btn.innerText = "✅ ยืนยันการจอง";
     }
   });
 
